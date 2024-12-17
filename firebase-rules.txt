@@ -1,0 +1,44 @@
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isManager() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager';
+    }
+    
+    function isCustomer() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'customer';
+    }
+
+    // HBL Rules
+    match /houseBillsOfLading/{hblId} {
+      allow read: if isAuthenticated() && (
+        isManager() || 
+        resource.data.shipper.userId == request.auth.uid ||
+        resource.data.consignee.userId == request.auth.uid
+      );
+      allow create, update: if isManager();
+      allow delete: if isManager();
+    }
+
+    // Financial Rules
+    match /financialSummary/{docId} {
+      allow read, write: if isManager();
+    }
+
+    match /transactions/{transactionId} {
+      allow read, write: if isManager();
+    }
+
+    match /payments/{paymentId} {
+      allow read, write: if isManager();
+    }
+  }
+}
+```
