@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Shipment } from '../types';
 import { format } from 'date-fns';
-import { Ship, Plane } from 'lucide-react';
-import StatusBadge from './StatusBadge';
+import { Ship, Plane, Truck } from 'lucide-react';
+import { StatusBadge } from './common';
 import ShipmentActions from './ShipmentActions';
 
 interface Props {
@@ -19,12 +19,15 @@ export default function ShipmentList({ shipments }: Props) {
     return shipment.brlReference || (shipment.type === 'airfreight' ? shipment.awbNumber : shipment.blNumber);
   };
 
-  const getShipmentIcon = (type: 'airfreight' | 'ocean') => {
-    return type === 'airfreight' ? (
-      <Plane className="h-5 w-5 text-blue-500" />
-    ) : (
-      <Ship className="h-5 w-5 text-blue-500" />
-    );
+  const getShipmentIcon = (type: Shipment['type']) => {
+    switch (type) {
+      case 'airfreight':
+        return <Plane className="h-5 w-5 text-blue-500" />;
+      case 'ocean':
+        return <Ship className="h-5 w-5 text-blue-500" />;
+      case 'truck':
+        return <Truck className="h-5 w-5 text-blue-500" />;
+    }
   };
 
   if (!shipments.length) {

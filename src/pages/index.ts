@@ -1,33 +1,23 @@
+// Core Pages
 export { default as HomePage } from './HomePage';
 export { default as Login } from './Login';
 export { default as Register } from './Register';
-export { default as Profile } from './Profile';
-export { default as Settings } from './Settings';
 
 // Dashboard Pages
-export { CustomerDashboard, ManagerDashboard } from './dashboard';
+export { default as Dashboard } from './ManagerDashboard';
+export { default as CustomerDashboard } from './CustomerDashboard';
+export { default as AdminDashboard } from './AdminDashboard';
 
-// MAERSK Pages
-export { MaerskDashboard, MaerskTracking } from './maersk';
+// Shipment Pages
+export { default as NewShipment } from './NewShipment';
+export { default as ShipmentList } from './ShipmentList';
+export { default as ShipmentDetails } from './ShipmentDetails';
 
-// Data Pages
-export {
-  CustomerList,
-  ShippingLineList,
-  FreightForwarderList,
-  AirportList,
-  PortList,
-  AirlineList,
-  CustomsBrokerList,
-  TruckerList,
-  TerminalList
-} from './data';
+// Master Data Pages
+export { default as MasterData } from './MasterData';
+export { default as ShippingLineList } from './ShippingLineList';
+export { default as FreightForwarderList } from './FreightForwarderList';
 
-// Financial Pages
-export { default as FinancialManagement } from './FinancialManagement';
-export { default as NewTransaction } from './NewTransaction';
-
-// Quote Pages
-export { default as QuoteDashboard } from './QuoteDashboard';
-export { default as QuoteDetails } from './QuoteDetails';
-export { default as NewQuote } from './NewQuote';
+// Feature Pages
+export { default as QuotationPage } from './QuotationPage';
+export { default as TariffsPage } from './TariffsPage';

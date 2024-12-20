@@ -1,4 +1,3 @@
-```typescript
 import { useState } from 'react';
 import { ContactPerson } from '../../types/masterData';
 import { X, User, Briefcase, Mail, Phone } from 'lucide-react';
@@ -11,7 +10,7 @@ interface Props {
   viewMode?: boolean;
 }
 
-export default function ContactModal({ contact, onSave, onClose, viewMode = false }: Props) {
+function ContactModal({ contact, onSave, onClose, viewMode = false }: Props) {
   const [formData, setFormData] = useState<ContactPerson>(contact || {
     name: '',
     position: '',
@@ -157,4 +156,5 @@ export default function ContactModal({ contact, onSave, onClose, viewMode = fals
     </div>
   );
 }
-```
+
+export default ContactModal;

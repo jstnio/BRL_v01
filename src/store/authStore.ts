@@ -24,33 +24,38 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   initialize: async () => {
     set({ loading: true });
+    console.log('AuthStore: Starting initialization');
     
     return new Promise<void>((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        console.log('AuthStore: Auth state changed', { firebaseUser: firebaseUser?.uid });
+        
         if (firebaseUser) {
           try {
             const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
             if (userDoc.exists()) {
-              const userData = {
-                uid: firebaseUser.uid,
-                email: firebaseUser.email!,
-                ...userDoc.data()
-              } as User;
+              const userData = userDoc.data() as User;
               set({ user: userData, loading: false, initialized: true });
+              console.log('AuthStore: User data loaded', { role: userData.role });
             } else {
+              console.error('AuthStore: User document not found');
               set({ user: null, loading: false, initialized: true });
             }
           } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('AuthStore: Error loading user data:', error);
             set({ user: null, loading: false, initialized: true });
           }
         } else {
+          console.log('AuthStore: No firebase user');
           set({ user: null, loading: false, initialized: true });
         }
         resolve();
       });
 
-      return () => unsubscribe();
+      return () => {
+        console.log('AuthStore: Cleanup');
+        unsubscribe();
+      };
     });
   },
 

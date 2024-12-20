@@ -1,23 +1,16 @@
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { UserRole } from '../types';
-import { useEffect } from 'react';
 
 interface Props {
   children: React.ReactNode;
-  role: UserRole | UserRole[];
+  role?: UserRole | UserRole[];
 }
 
 export default function ProtectedRoute({ children, role }: Props) {
-  const { user, loading, initialized, initialize } = useAuthStore();
+  const { user, loading } = useAuthStore();
 
-  useEffect(() => {
-    if (!initialized) {
-      initialize();
-    }
-  }, [initialized, initialize]);
-
-  if (!initialized || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -32,9 +25,11 @@ export default function ProtectedRoute({ children, role }: Props) {
     return <Navigate to="/login" />;
   }
 
-  const roles = Array.isArray(role) ? role : [role];
-  if (!roles.includes(user.role)) {
-    return <Navigate to="/" />;
+  if (role) {
+    const roles = Array.isArray(role) ? role : [role];
+    if (!roles.includes(user.role)) {
+      return <Navigate to="/" />;
+    }
   }
 
   return <>{children}</>;

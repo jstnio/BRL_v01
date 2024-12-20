@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, orderBy, limit, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../lib/firebase';
 import { OceanFreightShipment, AirFreightShipment, TruckFreightShipment } from '../types';
+import { getDoc } from 'firebase/firestore';
 
 interface ShipmentState {
   oceanShipments: OceanFreightShipment[];
@@ -39,6 +40,7 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
     try {
       set({ loading: true, error: null });
       
+      // Fetch shipments from all collections
       const oceanRef = collection(db, 'oceanShipments');
       const airRef = collection(db, 'airShipments');
       const truckRef = collection(db, 'truckShipments');
@@ -68,7 +70,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
         oceanShipments,
         airShipments,
         truckShipments,
-        loading: false 
+        loading: false,
+        error: null
       });
     } catch (error: any) {
       console.error('Error fetching shipments:', error);
@@ -89,10 +92,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       return docRef.id;
     } catch (error: any) {
       console.error('Error adding ocean shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -109,10 +110,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       return docRef.id;
     } catch (error: any) {
       console.error('Error adding air shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -129,10 +128,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       return docRef.id;
     } catch (error: any) {
       console.error('Error adding truck shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -140,17 +137,25 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
     try {
       set({ loading: true, error: null });
       const shipmentRef = doc(db, 'oceanShipments', id);
-      await updateDoc(shipmentRef, {
+      const updatedData = {
         ...data,
         updatedAt: new Date().toISOString(),
-      });
-      await get().fetchShipments();
+      };
+      await updateDoc(shipmentRef, updatedData);
+      
+      // Update the state directly instead of fetching all shipments
+      set(state => ({
+        ...state,
+        oceanShipments: state.oceanShipments.map(shipment =>
+          shipment.id === id ? { ...shipment, ...updatedData } : shipment
+        ),
+        loading: false,
+        error: null
+      }));
     } catch (error: any) {
       console.error('Error updating ocean shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -158,17 +163,25 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
     try {
       set({ loading: true, error: null });
       const shipmentRef = doc(db, 'airShipments', id);
-      await updateDoc(shipmentRef, {
+      const updatedData = {
         ...data,
         updatedAt: new Date().toISOString(),
-      });
-      await get().fetchShipments();
+      };
+      await updateDoc(shipmentRef, updatedData);
+      
+      // Update the state directly instead of fetching all shipments
+      set(state => ({
+        ...state,
+        airShipments: state.airShipments.map(shipment =>
+          shipment.id === id ? { ...shipment, ...updatedData } : shipment
+        ),
+        loading: false,
+        error: null
+      }));
     } catch (error: any) {
       console.error('Error updating air shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -183,10 +196,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       await get().fetchShipments();
     } catch (error: any) {
       console.error('Error updating truck shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -197,10 +208,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       await get().fetchShipments();
     } catch (error: any) {
       console.error('Error deleting ocean shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -211,10 +220,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       await get().fetchShipments();
     } catch (error: any) {
       console.error('Error deleting air shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -225,10 +232,8 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
       await get().fetchShipments();
     } catch (error: any) {
       console.error('Error deleting truck shipment:', error);
-      set({ error: error.message });
+      set({ error: error.message, loading: false });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
 }));

@@ -8,16 +8,29 @@ import { ChevronRight } from 'lucide-react';
 const HERO_IMAGE = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=2070";
 
 export default function HomePage() {
-  const { user } = useAuthStore();
+  const { user, loading } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.role === 'manager') {
-      navigate('/manager');
-    } else if (user?.role === 'customer') {
-      navigate('/customer');
+    if (!loading && user) {
+      if (user.role === 'manager') {
+        navigate('/dashboard');
+      } else if (user.role === 'customer') {
+        navigate('/customer');
+      } else if (user.role === 'admin') {
+        navigate('/admin');
+      }
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   // If user is authenticated, don't render the homepage content
   if (user) return null;

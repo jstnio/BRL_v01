@@ -1,47 +1,46 @@
-import { useState } from 'react';
-import { useMaerskTrackingStore } from '../../store/maerskTrackingStore';
-import { Ship } from 'lucide-react';
-import TrackingSearch from '../../components/maersk/TrackingSearch';
-import EventTimeline from '../../components/maersk/EventTimeline';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import React, { useState } from 'react';
+import { PageHeader } from '../../components/common';
+import { Button } from '../../components/Button';
+import { Search } from 'lucide-react';
 
 export default function MaerskTracking() {
-  const { events, loading, error, fetchEvents } = useMaerskTrackingStore();
-  const [hasSearched, setHasSearched] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState('');
 
-  const handleSearch = async (params: any) => {
-    setHasSearched(true);
-    await fetchEvents(params);
+  const handleSearch = () => {
+    // Tracking functionality will be implemented later
+    console.log('Searching for tracking number:', trackingNumber);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-          <Ship className="h-8 w-8 text-primary-600 mr-3" />
-          MAERSK Tracking
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Track your MAERSK shipments in real-time
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        <TrackingSearch onSearch={handleSearch} />
-
-        {error && (
-          <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            {error}
+    <div className="container mx-auto px-4 py-8">
+      <PageHeader
+        title="Shipment Tracking"
+        description="Track your shipments in real-time"
+      />
+      
+      <div className="mt-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="max-w-xl mx-auto">
+            <div className="flex gap-4">
+              <input
+                type="text"
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                placeholder="Enter tracking number"
+                className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+              <Button onClick={handleSearch}>
+                <Search className="h-4 w-4 mr-2" />
+                Track
+              </Button>
+            </div>
+            
+            <div className="mt-8 text-center text-gray-600">
+              <p>Tracking functionality will be implemented soon.</p>
+              <p className="mt-2 text-sm">Enter a tracking number to get started.</p>
+            </div>
           </div>
-        )}
-
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <LoadingSpinner size="lg" />
-          </div>
-        ) : (
-          hasSearched && <EventTimeline events={events} />
-        )}
+        </div>
       </div>
     </div>
   );

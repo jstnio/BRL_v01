@@ -19,8 +19,50 @@ export default function OceanShipmentForm({ onClose, shipment }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  console.log('Ocean shipment form received:', shipment);
+
   const form = useForm({
-    defaultValues: shipment || {
+    defaultValues: shipment ? {
+      ...shipment,
+      type: 'ocean',
+      status: shipment.status || 'booked',
+      brlReference: shipment.brlReference || '',
+      shipperReference: shipment.shipperReference || '',
+      consigneeReference: shipment.consigneeReference || '',
+      agentReference: shipment.agentReference || '',
+      blNumber: shipment.blNumber || '',
+      shipper: shipment.shipper || null,
+      consignee: shipment.consignee || null,
+      agent: shipment.agent || null,
+      shippingLine: shipment.shippingLine || null,
+      customsBroker: shipment.customsBroker || null,
+      trucker: shipment.trucker || null,
+      origin: {
+        city: shipment.origin?.city || '',
+        country: shipment.origin?.country || '',
+        port: shipment.origin?.port || null
+      },
+      destination: {
+        city: shipment.destination?.city || '',
+        country: shipment.destination?.country || '',
+        port: shipment.destination?.port || null
+      },
+      schedule: {
+        draftBlDate: shipment.schedule?.draftBlDate || '',
+        vgmDeadline: shipment.schedule?.vgmDeadline || '',
+        cargoCutOff: shipment.schedule?.cargoCutOff || '',
+        estimatedDeparture: shipment.schedule?.estimatedDeparture || '',
+        actualDeparture: shipment.schedule?.actualDeparture || '',
+        estimatedArrival: shipment.schedule?.estimatedArrival || '',
+        actualArrival: shipment.schedule?.actualArrival || ''
+      },
+      containers: shipment.containers || [],
+      cargoDetails: shipment.cargoDetails || [],
+      dueNumber: shipment.dueNumber || '',
+      customsStatus: shipment.customsStatus || 'Green',
+      specialInstructions: shipment.specialInstructions || '',
+      active: shipment.active !== false
+    } : {
       type: 'ocean',
       status: 'booked',
       brlReference: '',

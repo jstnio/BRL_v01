@@ -50,6 +50,8 @@ export interface HBLData {
   
   // Freight Details
   freightPayableAt?: string;
+  freightPrepaid?: boolean;
+  freightCollect?: boolean;
   freightTerms?: 'Prepaid' | 'Collect';
   
   // Document Details
@@ -61,6 +63,9 @@ export interface HBLData {
   cargoMovement?: 'FCL/FCL' | 'LCL/LCL' | 'FCL/LCL' | 'LCL/FCL';
   serviceType?: 'CY/CY' | 'CFS/CFS' | 'CY/CFS' | 'CFS/CY';
   
+  // Signature
+  signedBy?: string;
+
   // Timestamps
   createdAt: string;
   updatedAt: string;

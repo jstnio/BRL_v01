@@ -13,6 +13,8 @@ interface Props {
 }
 
 export default function AirShipmentForm({ onClose, shipment }: Props) {
+  console.log('Air shipment form received:', shipment);
+
   const { user } = useAuthStore();
   const { addAirShipment, updateAirShipment } = useShipmentStore();
   const { entities, fetchEntities } = useMasterDataStore();
@@ -20,7 +22,44 @@ export default function AirShipmentForm({ onClose, shipment }: Props) {
   const [error, setError] = useState('');
 
   const form = useForm({
-    defaultValues: shipment || {
+    defaultValues: shipment ? {
+      ...shipment,
+      type: 'airfreight',
+      status: shipment.status || 'booked',
+      brlReference: shipment.brlReference || '',
+      shipperReference: shipment.shipperReference || '',
+      consigneeReference: shipment.consigneeReference || '',
+      agentReference: shipment.agentReference || '',
+      awbNumber: shipment.awbNumber || '',
+      shipper: shipment.shipper || null,
+      consignee: shipment.consignee || null,
+      agent: shipment.agent || null,
+      airline: shipment.airline || null,
+      customsBroker: shipment.customsBroker || null,
+      trucker: shipment.trucker || null,
+      origin: {
+        city: shipment.origin?.city || '',
+        country: shipment.origin?.country || '',
+        airport: shipment.origin?.airport || null
+      },
+      destination: {
+        city: shipment.destination?.city || '',
+        country: shipment.destination?.country || '',
+        airport: shipment.destination?.airport || null
+      },
+      schedule: {
+        bookingDate: shipment.schedule?.bookingDate || '',
+        estimatedDeparture: shipment.schedule?.estimatedDeparture || '',
+        actualDeparture: shipment.schedule?.actualDeparture || '',
+        estimatedArrival: shipment.schedule?.estimatedArrival || '',
+        actualArrival: shipment.schedule?.actualArrival || ''
+      },
+      cargoDetails: shipment.cargoDetails || [],
+      dueNumber: shipment.dueNumber || '',
+      customsStatus: shipment.customsStatus || 'Green',
+      specialInstructions: shipment.specialInstructions || '',
+      active: shipment.active !== false
+    } : {
       type: 'airfreight',
       status: 'booked',
       brlReference: '',
@@ -37,22 +76,21 @@ export default function AirShipmentForm({ onClose, shipment }: Props) {
       origin: {
         city: '',
         country: '',
-        airportCode: '',
-        airportName: ''
+        airport: null
       },
       destination: {
         city: '',
         country: '',
-        airportCode: '',
-        airportName: ''
+        airport: null
       },
       schedule: {
+        bookingDate: '',
         estimatedDeparture: '',
         actualDeparture: '',
         estimatedArrival: '',
         actualArrival: ''
       },
-      cargoItems: [],
+      cargoDetails: [],
       dueNumber: '',
       customsStatus: 'Green',
       specialInstructions: '',

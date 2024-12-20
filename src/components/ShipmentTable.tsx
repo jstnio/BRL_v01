@@ -3,7 +3,7 @@ import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Ship, Plane } from 'lucide-react';
 import { format } from 'date-fns';
-import StatusBadge from './StatusBadge';
+import { StatusBadge } from './common';
 
 interface Props {
   agentId: string;

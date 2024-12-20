@@ -3,7 +3,7 @@ import { useFinancialStore } from '../store/financialStore';
 import { Transaction, TransactionStatus, TransactionType } from '../types/financial';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { Search, Filter, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
-import StatusBadge from './StatusBadge';
+import { StatusBadge } from './common';
 
 export default function TransactionList() {
   const { transactions, loading, fetchTransactions } = useFinancialStore();

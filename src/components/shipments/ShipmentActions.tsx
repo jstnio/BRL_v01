@@ -19,7 +19,14 @@ export default function ShipmentActions({ shipment }: Props) {
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log('Edit shipment data:', shipment);
     setShowEditForm(true);
+  };
+
+  const handleClose = () => {
+    setShowEditForm(false);
+    setShowDeleteModal(false);
+    setShowHBLModal(false);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -38,6 +45,15 @@ export default function ShipmentActions({ shipment }: Props) {
     e.preventDefault();
     e.stopPropagation();
     setShowHBLModal(true);
+  };
+
+  const handleFormSubmit = async (data: any) => {
+    try {
+      // Update will be handled by the form component
+      handleClose();
+    } catch (error) {
+      console.error('Error updating shipment:', error);
+    }
   };
 
   return (
@@ -78,18 +94,20 @@ export default function ShipmentActions({ shipment }: Props) {
       {showEditForm && (
         <Modal
           isOpen={showEditForm}
-          onClose={() => setShowEditForm(false)}
+          onClose={handleClose}
           title={`Edit ${shipment.type === 'ocean' ? 'Ocean' : 'Air'} Shipment`}
         >
           {shipment.type === 'ocean' ? (
             <OceanShipmentForm
               shipment={shipment}
-              onClose={() => setShowEditForm(false)}
+              onClose={handleClose}
+              onSubmit={handleFormSubmit}
             />
           ) : (
             <AirShipmentForm
               shipment={shipment}
-              onClose={() => setShowEditForm(false)}
+              onClose={handleClose}
+              onSubmit={handleFormSubmit}
             />
           )}
         </Modal>
@@ -98,7 +116,7 @@ export default function ShipmentActions({ shipment }: Props) {
       {showDeleteModal && (
         <Modal
           isOpen={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
+          onClose={handleClose}
           title="Delete Shipment"
         >
           <div className="p-6">
@@ -107,7 +125,7 @@ export default function ShipmentActions({ shipment }: Props) {
             </p>
             <div className="mt-6 flex justify-end space-x-3">
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={handleClose}
                 className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Cancel
@@ -115,7 +133,7 @@ export default function ShipmentActions({ shipment }: Props) {
               <button
                 onClick={() => {
                   // Handle delete
-                  setShowDeleteModal(false);
+                  handleClose();
                 }}
                 className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700"
               >
@@ -130,6 +148,7 @@ export default function ShipmentActions({ shipment }: Props) {
         <HBLModal
           shipment={shipment}
           onClose={() => setShowHBLModal(false)}
+          isOpen={showHBLModal}
         />
       )}
     </>

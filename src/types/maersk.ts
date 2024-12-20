@@ -9,7 +9,7 @@ export interface Port {
   carrierCityGeoID: string;
 }
 
-export interface Vessel {
+export interface MaerskVessel {
   vesselIMONumber: string;
   carrierVesselCode: string;
   vesselName: string;
@@ -47,7 +47,7 @@ export interface VesselCall {
 
 export interface FacilityCall {
   transport: {
-    vessel: Vessel;
+    vessel: MaerskVessel;
     inboundService: Service;
     outboundService: Service;
   };
@@ -60,7 +60,7 @@ export interface PortCall {
 }
 
 export interface VesselSchedules {
-  vessel: Vessel;
+  vessel: MaerskVessel;
   vesselCalls: VesselCall[];
 }
 

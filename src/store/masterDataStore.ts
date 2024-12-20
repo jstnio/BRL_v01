@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { BaseEntity } from '../types/common';
+import { getCurrentTimestamp } from '../lib/timeUtils';
 
 interface MasterDataState {
   entities: Record<string, BaseEntity[]>;
@@ -9,7 +10,7 @@ interface MasterDataState {
   error: string | null;
   setEntities: (collectionName: string, entities: BaseEntity[]) => void;
   fetchEntities: (collectionName: string) => Promise<void>;
-  addEntity: (collectionName: string, entity: Omit<BaseEntity, 'id' | 'createdAt' | 'updatedAt'>) => Promise<string>;
+  addEntity: (collectionName: string, entity: Omit<BaseEntity, 'id' | 'createdAt' | 'updatedAt' | 'active'>) => Promise<string>;
   updateEntity: (collectionName: string, id: string, data: Partial<BaseEntity>) => Promise<void>;
   deleteEntity: (collectionName: string, id: string) => Promise<void>;
   setLoading: (loading: boolean) => void;
@@ -59,10 +60,12 @@ export const useMasterDataStore = create<MasterDataState>((set, get) => ({
   addEntity: async (collectionName, entity) => {
     try {
       set({ loading: true, error: null });
+      const timestamp = getCurrentTimestamp();
       const docRef = await addDoc(collection(db, collectionName), {
         ...entity,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        active: true,
+        createdAt: timestamp,
+        updatedAt: timestamp,
       });
 
       await get().fetchEntities(collectionName);
@@ -82,7 +85,7 @@ export const useMasterDataStore = create<MasterDataState>((set, get) => ({
       const docRef = doc(db, collectionName, id);
       await updateDoc(docRef, {
         ...data,
-        updatedAt: new Date().toISOString(),
+        updatedAt: getCurrentTimestamp(),
       });
 
       await get().fetchEntities(collectionName);
@@ -98,7 +101,11 @@ export const useMasterDataStore = create<MasterDataState>((set, get) => ({
   deleteEntity: async (collectionName, id) => {
     try {
       set({ loading: true, error: null });
-      await deleteDoc(doc(db, collectionName, id));
+      const docRef = doc(db, collectionName, id);
+      await updateDoc(docRef, {
+        active: false,
+        updatedAt: getCurrentTimestamp(),
+      });
       
       set(state => ({
         entities: {

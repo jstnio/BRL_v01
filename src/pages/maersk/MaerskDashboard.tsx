@@ -1,92 +1,70 @@
-import { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMaerskStore } from '../../store/maerskStore';
-import { Ship, Search } from 'lucide-react';
 import { Button } from '../../components/Button';
+import { PageHeader } from '../../components/common';
+import { Search, DollarSign, Calculator } from 'lucide-react';
 
-export default function MaerskDashboard() {
+const MaerskDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { ports, vessels, loading, error, fetchPorts, fetchVessels } = useMaerskStore();
-
-  useEffect(() => {
-    fetchPorts();
-    fetchVessels();
-  }, [fetchPorts, fetchVessels]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-          <Ship className="h-8 w-8 text-primary-600 mr-3" />
-          MAERSK Integration
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Manage MAERSK schedules and track shipments
-        </p>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <PageHeader
+        title="ECU Worldwide Services"
+        description="Access tracking, tariffs, and quotation services"
+      />
 
-      <div className="mb-8">
-        <Button onClick={() => navigate('/maersk/tracking')} className="flex items-center">
-          <Search className="h-4 w-4 mr-2" />
-          Track Shipments
-        </Button>
-      </div>
-
-      {error && (
-        <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          {error}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Active Ports Section */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-            <h3 className="text-lg font-medium text-gray-900">Active Ports</h3>
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-4">
+            <Search className="h-8 w-8 text-blue-600" />
+            <div>
+              <h3 className="text-lg font-semibold">Tracking</h3>
+              <p className="text-gray-600">Track your shipments in real-time</p>
+            </div>
           </div>
-          <div className="p-6">
-            {loading ? (
-              <div className="text-center py-4">Loading ports...</div>
-            ) : (
-              <div className="space-y-4">
-                {ports.map((port) => (
-                  <div key={port.UNLocationCode} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">{port.portName}</p>
-                      <p className="text-sm text-gray-500">{port.cityName}, {port.countryName}</p>
-                    </div>
-                    <span className="text-sm text-gray-500">{port.UNLocationCode}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <Button
+            onClick={() => navigate('/maersk/tracking')}
+            className="mt-4 w-full"
+          >
+            Track Shipments
+          </Button>
         </div>
 
-        {/* Active Vessels Section */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-            <h3 className="text-lg font-medium text-gray-900">Active Vessels</h3>
+        <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-4">
+            <DollarSign className="h-8 w-8 text-blue-600" />
+            <div>
+              <h3 className="text-lg font-semibold">Tariffs</h3>
+              <p className="text-gray-600">Check ECU Worldwide tariffs</p>
+            </div>
           </div>
-          <div className="p-6">
-            {loading ? (
-              <div className="text-center py-4">Loading vessels...</div>
-            ) : (
-              <div className="space-y-4">
-                {vessels.map((vessel) => (
-                  <div key={vessel.vesselIMONumber} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">{vessel.vesselName}</p>
-                      <p className="text-sm text-gray-500">IMO: {vessel.vesselIMONumber}</p>
-                    </div>
-                    <span className="text-sm text-gray-500">{vessel.vesselCallSign}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+          <Button
+            onClick={() => navigate('/maersk/tariffs')}
+            className="mt-4 w-full"
+          >
+            Check Tariffs
+          </Button>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-4">
+            <Calculator className="h-8 w-8 text-blue-600" />
+            <div>
+              <h3 className="text-lg font-semibold">Quotation</h3>
+              <p className="text-gray-600">Get instant shipping quotes</p>
+            </div>
           </div>
+          <Button
+            onClick={() => navigate('/maersk/quotation')}
+            className="mt-4 w-full"
+          >
+            Get Quote
+          </Button>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default MaerskDashboard;

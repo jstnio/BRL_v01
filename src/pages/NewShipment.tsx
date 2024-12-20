@@ -77,9 +77,9 @@ export default function NewShipment() {
 
       <div className="bg-white rounded-lg shadow-lg">
         {shipmentType === 'ocean' ? (
-          <OceanShipmentForm onClose={() => navigate('/manager')} />
+          <OceanShipmentForm onClose={() => navigate('/shipments')} />
         ) : (
-          <AirShipmentForm onClose={() => navigate('/manager')} />
+          <AirShipmentForm onClose={() => navigate('/shipments')} />
         )}
       </div>
     </div>

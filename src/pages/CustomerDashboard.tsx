@@ -1,16 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { useShipmentStore } from '../store/shipmentStore';
-import { getDocs } from 'firebase/firestore';
-import { Search, Ship, Plane, Truck, Package, AlertCircle } from 'lucide-react';
-import { Shipment } from '../types';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Button } from '../components/Button';
 import { getCustomerShipments, searchShipments } from '../lib/firebase';
 import { showError } from '../lib/utils';
+import { Button } from '../components/Button';
+import { Row, Col, Space } from 'antd';
 
 export default function CustomerDashboard() {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { setOceanShipments, setAirShipments, setTruckShipments, oceanShipments, airShipments, truckShipments, loading } = useShipmentStore();
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,22 +32,64 @@ export default function CustomerDashboard() {
           const queries = getCustomerShipments(user.uid);
           const [oceanSnapshot, airSnapshot, truckSnapshot] = await Promise.all([
             getDocs(queries.ocean),
-            getDocs(queries.air),
+            getDocs(queries.airfreight),
             getDocs(queries.truck)
           ]);
 
-          const oceanData = oceanSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          const airData = airSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          const truckData = truckSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
+          const oceanData = oceanSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              name: data.name || '',
+              code: data.code || '',
+              active: data.active ?? true,
+              type: 'ocean' as const,
+              status: data.status || 'booked',
+              origin: data.origin || { city: '', country: '' },
+              destination: data.destination || { city: '', country: '' },
+              departureDate: data.departureDate || '',
+              arrivalDate: data.arrivalDate || '',
+              createdAt: data.createdAt || new Date().toISOString(),
+              updatedAt: data.updatedAt || new Date().toISOString(),
+              ...data
+            } as Shipment;
+          });
+          const airData = airSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              name: data.name || '',
+              code: data.code || '',
+              active: data.active ?? true,
+              type: 'airfreight' as const,
+              status: data.status || 'booked',
+              origin: data.origin || { city: '', country: '' },
+              destination: data.destination || { city: '', country: '' },
+              departureDate: data.departureDate || '',
+              arrivalDate: data.arrivalDate || '',
+              createdAt: data.createdAt || new Date().toISOString(),
+              updatedAt: data.updatedAt || new Date().toISOString(),
+              ...data
+            } as Shipment;
+          });
+          const truckData = truckSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              name: data.name || '',
+              code: data.code || '',
+              active: data.active ?? true,
+              type: 'truck' as const,
+              status: data.status || 'booked',
+              origin: data.origin || { city: '', country: '' },
+              destination: data.destination || { city: '', country: '' },
+              departureDate: data.departureDate || '',
+              arrivalDate: data.arrivalDate || '',
+              createdAt: data.createdAt || new Date().toISOString(),
+              updatedAt: data.updatedAt || new Date().toISOString(),
+              ...data
+            } as Shipment;
+          });
 
           setOceanShipments(oceanData);
           setAirShipments(airData);
@@ -73,10 +112,22 @@ export default function CustomerDashboard() {
 
     setIsSearching(true);
     setHasSearched(true);
+    setSearchResults([]);
 
     try {
       const results = await searchShipments(searchTerm.trim());
       setSearchResults(results);
+
+      // If we got results from Maersk API, show them in a modal or expanded view
+      if (results.length > 0 && results[0].events) {
+        // Navigate to shipment details page
+        navigate(`/shipment/${results[0].id}`, { 
+          state: { 
+            shipment: results[0],
+            isExternalTracking: true
+          }
+        });
+      }
     } catch (error) {
       console.error('Error searching shipments:', error);
       showError('Failed to search shipments');
@@ -88,11 +139,13 @@ export default function CustomerDashboard() {
   const getTrackingNumber = (shipment: Shipment) => {
     switch (shipment.type) {
       case 'ocean':
-        return `BL: ${shipment.blNumber}`;
+        return shipment.blNumber ? `BL: ${shipment.blNumber}` : 
+               shipment.containerNumber ? `Container: ${shipment.containerNumber}` :
+               shipment.bookingNumber ? `Booking: ${shipment.bookingNumber}` : 'N/A';
       case 'airfreight':
-        return `AWB: ${shipment.awbNumber}`;
+        return `AWB: ${shipment.awbNumber || 'N/A'}`;
       case 'truck':
-        return `CRT: ${shipment.crtNumber}`;
+        return `CRT: ${shipment.crtNumber || 'N/A'}`;
     }
   };
 
@@ -141,7 +194,6 @@ export default function CustomerDashboard() {
           <Button
             onClick={handleSearch}
             loading={isSearching}
-            className="px-6"
           >
             <Search className="h-4 w-4 mr-2" />
             Track Shipment
@@ -214,6 +266,19 @@ export default function CustomerDashboard() {
           </div>
         )}
       </div>
+
+      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+        <Col span={24}>
+          <Space>
+            <Button onClick={() => navigate('/quotation')} variant="primary">
+              Get Quote
+            </Button>
+            <Button onClick={() => navigate('/tariffs')} variant="primary">
+              Search Tariffs
+            </Button>
+          </Space>
+        </Col>
+      </Row>
 
       {loading ? (
         <div className="text-center py-12">

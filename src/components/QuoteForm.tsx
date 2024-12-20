@@ -71,8 +71,8 @@ export default function QuoteForm({ quote, onClose }: Props) {
       phone: ''
     },
     agentReference: '',
-    freightCondition: 'Port to Port',
-    incoterm: 'FOB - Free on Board',
+    freightCondition: 'Select',
+    incoterm: 'Select',
     origin: {
       name: '',
       city: '',

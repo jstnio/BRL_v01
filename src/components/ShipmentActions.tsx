@@ -5,7 +5,7 @@ import { Shipment } from '../types';
 import OceanShipmentForm from './OceanShipmentForm';
 import AirShipmentForm from './AirShipmentForm';
 import DeleteShipmentModal from './DeleteShipmentModal';
-import HBLModal from './HouseBillOfLading/HBLModal';
+import { HBLModal } from './hbl';
 
 interface Props {
   shipment: Shipment;

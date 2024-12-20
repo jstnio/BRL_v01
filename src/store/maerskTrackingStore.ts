@@ -1,33 +1,41 @@
-import { create } from 'zustand';
+import create from 'zustand';
+import { Event, ShipmentDetails } from '../types/maerskTracking';
 import { getTrackingEvents } from '../services/maerskTrackingApi';
-import { Event } from '../types/maerskTracking';
 
-interface MaerskTrackingState {
+interface MaerskTrackingStore {
   events: Event[];
+  shipmentDetails?: ShipmentDetails;
   loading: boolean;
   error: string | null;
-  fetchEvents: (params: {
-    carrierBookingReference?: string;
-    transportDocumentReference?: string;
-    equipmentReference?: string;
-  }) => Promise<void>;
+  fetchEvents: (trackingNumber: string) => Promise<void>;
 }
 
-export const useMaerskTrackingStore = create<MaerskTrackingState>((set) => ({
+export const useMaerskTrackingStore = create<MaerskTrackingStore>((set) => ({
   events: [],
+  shipmentDetails: undefined,
   loading: false,
   error: null,
-
-  fetchEvents: async (params) => {
+  fetchEvents: async (trackingNumber: string) => {
     try {
       set({ loading: true, error: null });
-      const response = await getTrackingEvents({
-        ...params,
-        limit: 100,
+      console.log('Fetching events for tracking number:', trackingNumber);
+      
+      const { events, shipmentDetails } = await getTrackingEvents(trackingNumber);
+      
+      set({ 
+        events, 
+        shipmentDetails,
+        loading: false,
+        error: null
       });
-      set({ events: response.events, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      console.error('Error in fetchEvents:', error);
+      set({ 
+        events: [], 
+        shipmentDetails: undefined,
+        loading: false, 
+        error: error instanceof Error ? error.message : 'An error occurred while fetching tracking information'
+      });
     }
-  },
+  }
 }));

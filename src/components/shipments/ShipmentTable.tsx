@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shipment } from '../../types';
 import { format } from 'date-fns';
 import { Ship, Plane } from 'lucide-react';
-import StatusBadge from '../StatusBadge';
+import { StatusBadge } from '../common';
 import ShipmentActions from './ShipmentActions';
 
 interface Props {

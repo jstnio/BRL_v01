@@ -1,6 +1,7 @@
 import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Transaction, PaymentRecord, FinancialSummary } from '../types/financial';
+import { getCurrentTimestamp } from '../lib/timeUtils';
 
 class FinancialService {
   async fetchTransactions() {
@@ -39,46 +40,77 @@ class FinancialService {
   }
 
   async addTransaction(transaction: Omit<Transaction, 'id'>) {
-    const docRef = await addDoc(collection(db, 'transactions'), {
-      ...transaction,
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    });
-    return docRef.id;
+    try {
+      const timestamp = getCurrentTimestamp();
+      const docRef = await addDoc(collection(db, 'transactions'), {
+        ...transaction,
+        active: true,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      });
+      return docRef.id;
+    } catch (error) {
+      console.error('Failed to add transaction:', error);
+      throw new Error('Failed to add transaction. Please try again.');
+    }
   }
 
   async updateTransaction(id: string, data: Partial<Transaction>) {
-    const docRef = doc(db, 'transactions', id);
-    await updateDoc(docRef, {
-      ...data,
-      updatedAt: new Date().toISOString()
-    });
+    try {
+      const docRef = doc(db, 'transactions', id);
+      await updateDoc(docRef, {
+        ...data,
+        updatedAt: getCurrentTimestamp()
+      });
+    } catch (error) {
+      console.error('Failed to update transaction:', error);
+      throw new Error('Failed to update transaction. Please try again.');
+    }
   }
 
   async deleteTransaction(id: string) {
-    const docRef = doc(db, 'transactions', id);
-    await updateDoc(docRef, {
-      active: false,
-      updatedAt: new Date().toISOString()
-    });
+    try {
+      const docRef = doc(db, 'transactions', id);
+      await updateDoc(docRef, {
+        active: false,
+        updatedAt: getCurrentTimestamp()
+      });
+    } catch (error) {
+      console.error('Failed to delete transaction:', error);
+      throw new Error('Failed to delete transaction. Please try again.');
+    }
   }
 
   async addPayment(payment: Omit<PaymentRecord, 'id'>) {
-    const docRef = await addDoc(collection(db, 'payments'), {
-      ...payment,
-      createdAt: new Date().toISOString()
-    });
-    return docRef.id;
+    try {
+      const docRef = await addDoc(collection(db, 'payments'), {
+        ...payment,
+        createdAt: getCurrentTimestamp()
+      });
+      return docRef.id;
+    } catch (error) {
+      console.error('Failed to add payment:', error);
+      throw new Error('Failed to add payment. Please try again.');
+    }
   }
 
   async updatePayment(id: string, data: Partial<PaymentRecord>) {
-    const docRef = doc(db, 'payments', id);
-    await updateDoc(docRef, data);
+    try {
+      const docRef = doc(db, 'payments', id);
+      await updateDoc(docRef, data);
+    } catch (error) {
+      console.error('Failed to update payment:', error);
+      throw new Error('Failed to update payment. Please try again.');
+    }
   }
 
   async deletePayment(id: string) {
-    await deleteDoc(doc(db, 'payments', id));
+    try {
+      await deleteDoc(doc(db, 'payments', id));
+    } catch (error) {
+      console.error('Failed to delete payment:', error);
+      throw new Error('Failed to delete payment. Please try again.');
+    }
   }
 }
 

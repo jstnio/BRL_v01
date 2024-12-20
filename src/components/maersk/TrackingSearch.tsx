@@ -11,18 +11,57 @@ interface Props {
 }
 
 export default function TrackingSearch({ onSearch }: Props) {
-  const [searchType, setSearchType] = useState<'booking' | 'document' | 'equipment'>('booking');
+  const [searchType, setSearchType] = useState<'booking' | 'document' | 'equipment'>('document');
   const [searchValue, setSearchValue] = useState('');
+
+  const detectSearchType = (value: string): 'booking' | 'document' | 'equipment' => {
+    const cleanValue = value.trim().toUpperCase();
+    
+    // Check for Maersk booking reference format
+    if (cleanValue.startsWith('MAE')) {
+      return 'booking';
+    }
+    
+    // Check for container number format
+    if (cleanValue.match(/^[A-Z]{4}\d{7}$/) || cleanValue.match(/^MAEU\d{7}$/)) {
+      return 'equipment';
+    }
+    
+    // Default to document reference
+    return 'document';
+  };
 
   const handleSearch = () => {
     if (!searchValue) return;
 
+    const cleanValue = searchValue.trim().toUpperCase();
+    const detectedType = detectSearchType(cleanValue);
+    
+    // Update the search type if it was auto-detected
+    if (searchType !== detectedType) {
+      setSearchType(detectedType);
+    }
+
+    let formattedValue = cleanValue;
+    
+    // Only format if it doesn't already have the correct prefix
+    if (detectedType === 'booking' && !formattedValue.startsWith('MAE')) {
+      formattedValue = `MAE${formattedValue}`;
+    }
+
+    if (detectedType === 'equipment' && !formattedValue.match(/^[A-Z]{4}\d{7}$/)) {
+      if (formattedValue.match(/^\d+$/)) {
+        formattedValue = `MAEU${formattedValue.padStart(7, '0')}`;
+      }
+    }
+
     const params = {
-      carrierBookingReference: searchType === 'booking' ? searchValue : undefined,
-      transportDocumentReference: searchType === 'document' ? searchValue : undefined,
-      equipmentReference: searchType === 'equipment' ? searchValue : undefined,
+      carrierBookingReference: detectedType === 'booking' ? formattedValue : undefined,
+      transportDocumentReference: detectedType === 'document' ? formattedValue : undefined,
+      equipmentReference: detectedType === 'equipment' ? formattedValue : undefined,
     };
 
+    console.log('Searching with params:', params);
     onSearch(params);
   };
 
@@ -35,8 +74,8 @@ export default function TrackingSearch({ onSearch }: Props) {
             onChange={(e) => setSearchType(e.target.value as any)}
             className="block w-48 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
-            <option value="booking">Booking Reference</option>
             <option value="document">Document Reference</option>
+            <option value="booking">Booking Reference</option>
             <option value="equipment">Equipment Reference</option>
           </select>
           <div className="flex-1 relative">
