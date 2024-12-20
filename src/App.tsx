@@ -21,6 +21,7 @@ import {
   QuotationPage,
   TariffsPage
 } from './pages';
+import Apollo from './pages/Apollo';
 
 export default function App() {
   const { user, loading, initialize } = useAuthStore();
@@ -141,6 +142,16 @@ export default function App() {
                   <TariffsPage />
                 </ProtectedRoute>
               } 
+            />
+
+            {/* Apollo Route */}
+            <Route
+              path="apollo"
+              element={
+                <ProtectedRoute role="manager">
+                  <Apollo />
+                </ProtectedRoute>
+              }
             />
           </Route>
         </Routes>

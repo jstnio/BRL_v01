@@ -1,8 +1,12 @@
 import { initializeCountries } from './initializeCountries';
+import { initializeShipments } from './initializeShipments';
 
 export async function initializeData() {
   try {
-    await initializeCountries();
+    await Promise.all([
+      initializeCountries(),
+      initializeShipments()
+    ]);
     console.log('All data initialized successfully');
   } catch (error) {
     console.error('Error initializing data:', error);

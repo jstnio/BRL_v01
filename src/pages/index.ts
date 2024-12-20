@@ -21,3 +21,6 @@ export { default as FreightForwarderList } from './FreightForwarderList';
 // Feature Pages
 export { default as QuotationPage } from './QuotationPage';
 export { default as TariffsPage } from './TariffsPage';
+
+// Integration Pages
+export { default as Apollo } from './Apollo';

@@ -7,6 +7,7 @@ export interface ContactPerson {
 }
 
 export interface BaseEntity {
+  type: string;
   company: ReactNode;
   id: string;
   name: string;

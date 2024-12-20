@@ -31,17 +31,23 @@ export interface Location {
   country: string;
 }
 
+// Firestore timestamp type
+export interface FirestoreTimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
 export interface Shipment {
   brlReference: string | undefined;
   id: string;
   type: ShipmentType;
   status: ShipmentStatus;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | FirestoreTimestamp;
+  updatedAt: string | FirestoreTimestamp;
   origin: Location;
   destination: Location;
-  departureDate?: string;
-  arrivalDate?: string;
+  departureDate?: string | FirestoreTimestamp;
+  arrivalDate?: string | FirestoreTimestamp;
   
   // Ocean specific fields
   blNumber?: string;

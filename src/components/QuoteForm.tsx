@@ -4,7 +4,7 @@ import { useQuoteStore } from '../store/quoteStore';
 import { useMasterDataStore } from '../store/masterDataStore';
 import { useAuthStore } from '../store/authStore';
 import { X, FileText } from 'lucide-react';
-import { Quote } from '../types/quote';
+import { Quote, QuoteType, QuoteStatus } from '../types/quote';
 import CargoItemsForm from './CargoItemsForm';
 import FreightCostsForm from './FreightCostsForm';
 import QuoteTermsForm from './QuoteTermsForm';
@@ -12,6 +12,59 @@ import QuoteTermsForm from './QuoteTermsForm';
 interface Props {
   quote?: Quote;
   onClose: () => void;
+}
+
+interface QuoteFormData {
+  type?: QuoteType;
+  reference?: string;
+  status?: QuoteStatus;
+  shipper?: {
+    id?: string;
+    name?: string;
+    company?: string;
+    email?: string;
+    phone?: string;
+  };
+  consignee?: {
+    id?: string;
+    name?: string;
+    company?: string;
+    email?: string;
+    phone?: string;
+  };
+  agent?: {
+    id?: string;
+    name?: string;
+    company?: string;
+    email?: string;
+    phone?: string;
+  };
+  agentReference?: string;
+  freightCondition?: string;
+  incoterm?: string;
+  origin?: {
+    name?: string;
+    city?: string;
+    country?: string;
+    code?: string;
+  };
+  destination?: {
+    name?: string;
+    city?: string;
+    country?: string;
+    code?: string;
+  };
+  cargoDetails?: any[];
+  costs?: any[];
+  subtotal?: number;
+  total?: number;
+  currency?: string;
+  validity?: {
+    issuedDate?: string;
+    validUntil?: string;
+  };
+  terms?: string[];
+  notes?: string;
 }
 
 const freightConditions = [
@@ -45,10 +98,10 @@ export default function QuoteForm({ quote, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const defaultValues = {
+  const defaultValues: QuoteFormData = {
     type: 'ocean',
     reference: `BRL-Q-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
-    status: 'draft',
+    status: QuoteStatus.Draft,
     shipper: {
       id: '',
       name: '',
@@ -104,7 +157,7 @@ export default function QuoteForm({ quote, onClose }: Props) {
     notes: ''
   };
 
-  const form = useForm({
+  const form = useForm<QuoteFormData>({
     defaultValues: quote || defaultValues
   });
 
@@ -123,14 +176,14 @@ export default function QuoteForm({ quote, onClose }: Props) {
     fetchMasterData();
   }, [fetchEntities]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: QuoteFormData) => {
     setLoading(true);
     setError('');
 
     try {
-      const shipper = entities.customers?.find(c => c.id === data.shipper.id);
-      const consignee = entities.customers?.find(c => c.id === data.consignee.id);
-      const agent = entities.freightForwarders?.find(a => a.id === data.agent.id);
+      const shipper = entities.customers?.find(c => c.id === data.shipper?.id);
+      const consignee = entities.customers?.find(c => c.id === data.consignee?.id);
+      const agent = entities.freightForwarders?.find(a => a.id === data.agent?.id);
 
       if (!shipper || !consignee) {
         throw new Error('Please select both shipper and consignee');
@@ -164,7 +217,7 @@ export default function QuoteForm({ quote, onClose }: Props) {
           name: user!.name,
           email: user!.email,
         },
-        status: 'draft',
+        status: QuoteStatus.Draft,
         createdAt: quote?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

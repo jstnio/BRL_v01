@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { 
   Menu, X, Package, Database, List, FileText, 
-  ChevronDown, LogOut, Settings, User, DollarSign, Ship
+  ChevronDown, LogOut, Settings, User, DollarSign, Ship, Search
 } from 'lucide-react';
 import { Transition } from '@headlessui/react';
 
@@ -26,6 +26,7 @@ const Navbar = () => {
   const navigationItems = user?.role === 'manager' ? [
     { name: 'Shipments', path: '/manager', icon: Package },
     { name: 'MAERSK', path: '/maersk', icon: Ship },
+    { name: 'Apollo', path: '/apollo', icon: Search },
     { name: 'Quotes', path: '/quotes', icon: FileText },
     { name: 'Financial', path: '/financial', icon: DollarSign },
     { name: 'Data', path: '/master-data', icon: Database },

@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, Plus, Search, AlertCircle, Ship, Plane, Truck } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useShipmentStore } from '../store/shipmentStore';
 import { StatusBadge, EntityList, Button } from '../components/common';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ShipmentStatus, ShipmentType, Shipment } from '../types';
 
 export default function ShipmentList() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { oceanShipments, airShipments, truckShipments, loading } = useShipmentStore();
+  const { oceanShipments, airShipments, truckShipments, loading, fetchShipments } = useShipmentStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<ShipmentStatus | 'all'>('all');
   const [typeFilter, setTypeFilter] = useState<ShipmentType | 'all'>('all');
+
+  useEffect(() => {
+    fetchShipments();
+  }, [fetchShipments]);
 
   // Combine all shipments
   const allShipments = [...oceanShipments, ...airShipments, ...truckShipments];
@@ -30,6 +34,20 @@ export default function ShipmentList() {
 
     return matchesSearch && matchesStatus && matchesType;
   });
+
+  const formatDate = (dateString: string | { seconds: number; nanoseconds: number }) => {
+    try {
+      if (typeof dateString === 'string') {
+        return format(parseISO(dateString), 'MMM d, yyyy');
+      } else if (dateString && 'seconds' in dateString) {
+        return format(new Date(dateString.seconds * 1000), 'MMM d, yyyy');
+      }
+      return 'Invalid date';
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
+  };
 
   const renderShipmentItem = (shipment: Shipment) => (
     <div 
@@ -55,7 +73,7 @@ export default function ShipmentList() {
       <div className="flex items-center space-x-4">
         <StatusBadge status={shipment.status} />
         <span className="text-sm text-gray-500">
-          {format(new Date(shipment.createdAt), 'MMM d, yyyy')}
+          {formatDate(shipment.createdAt)}
         </span>
       </div>
     </div>
