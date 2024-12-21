@@ -20,10 +20,16 @@ const Navbar = () => {
   };
 
   const isActive = (path: string) => {
+    if (path === '/master-data') {
+      return location.pathname === '/master-data' || location.pathname.startsWith('/master-data/');
+    }
     return location.pathname.startsWith(path);
   };
 
-  const navigationItems = user?.role === 'manager' ? [
+  const navigationItems = user?.role === 'admin' ? [
+    { name: 'Shipments', path: '/shipments', icon: Package },
+    { name: 'Data', path: '/master-data', icon: Database },
+  ] : user?.role === 'manager' ? [
     { name: 'Shipments', path: '/manager', icon: Package },
     { name: 'MAERSK', path: '/maersk', icon: Ship },
     { name: 'Apollo', path: '/apollo', icon: Search },

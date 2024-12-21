@@ -101,7 +101,7 @@ export default function QuoteForm({ quote, onClose }: Props) {
   const defaultValues: QuoteFormData = {
     type: 'ocean',
     reference: `BRL-Q-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
-    status: QuoteStatus.Draft,
+    status: 'draft',
     shipper: {
       id: '',
       name: '',
@@ -189,35 +189,35 @@ export default function QuoteForm({ quote, onClose }: Props) {
         throw new Error('Please select both shipper and consignee');
       }
 
-      const quoteData = {
+      const quoteData: Partial<Quote> = {
         ...data,
         shipper: {
-          id: shipper.id,
-          name: shipper.name,
-          company: shipper.company || '',
-          email: shipper.email || '',
-          phone: shipper.phone || ''
+          id: data.shipper?.id || '',
+          name: data.shipper?.name || '',
+          company: data.shipper?.company || '',
+          email: data.shipper?.email || '',
+          phone: data.shipper?.phone || '',
         },
         consignee: {
-          id: consignee.id,
-          name: consignee.name,
-          company: consignee.company || '',
-          email: consignee.email || '',
-          phone: consignee.phone || ''
+          id: data.consignee?.id || '',
+          name: data.consignee?.name || '',
+          company: data.consignee?.company || '',
+          email: data.consignee?.email || '',
+          phone: data.consignee?.phone || '',
         },
-        agent: agent ? {
-          id: agent.id,
-          name: agent.name,
-          company: agent.company || '',
-          email: agent.email || '',
-          phone: agent.phone || ''
+        agent: data.agent ? {
+          id: data.agent.id || '',
+          name: data.agent.name || '',
+          company: data.agent.company || '',
+          email: data.agent.email || '',
+          phone: data.agent.phone || '',
         } : null,
         createdBy: {
           id: user!.uid,
           name: user!.name,
           email: user!.email,
         },
-        status: QuoteStatus.Draft,
+        status: 'draft' as QuoteStatus,
         createdAt: quote?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

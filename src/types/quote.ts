@@ -31,6 +31,7 @@ export interface Quote {
   status: QuoteStatus;
   shipper: QuoteParty;
   consignee: QuoteParty;
+  agent?: QuoteParty | null;
   origin: Location;
   destination: Location;
   cargoDetails: CargoItem[];

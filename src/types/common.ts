@@ -22,6 +22,7 @@ export interface BaseEntity {
 }
 
 export interface SimpleLocation {
+  port: null;
   city: string;
   country: string;
 }
@@ -40,4 +41,32 @@ export interface Shipment extends BaseEntity {
   blNumber?: string;
   crtNumber?: string;
   notes?: string;
+}
+
+export interface OceanFreightShipment extends Shipment {
+  agentReference: string;
+  consigneeReference: string;
+  shipperReference: string;
+  shipper: null;
+  consignee: null;
+  agent: null;
+  shippingLine: null;
+  customsBroker: null;
+  trucker: null;
+  customsStatus: string;
+  specialInstructions: string;
+  dueNumber: string;
+  containers: never[];
+  cargoDetails: never[];
+  schedule: any;
+  type: 'ocean';
+  vessel?: string;
+  imoNumber?: string;
+  blNumber?: string;
+  bookingNumber?: string;
+  containerNumber?: string;
+  containerType?: string;
+  portOfLoading?: string;
+  portOfDischarge?: string;
+  estimatedTransitTime?: number;
 }

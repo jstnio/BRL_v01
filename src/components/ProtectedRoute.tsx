@@ -28,7 +28,15 @@ export default function ProtectedRoute({ children, role }: Props) {
   if (role) {
     const roles = Array.isArray(role) ? role : [role];
     if (!roles.includes(user.role)) {
-      return <Navigate to="/" />;
+      // Redirect to appropriate dashboard based on user role
+      switch (user.role) {
+        case 'manager':
+          return <Navigate to="/manager" />;
+        case 'customer':
+          return <Navigate to="/customer" />;
+        default:
+          return <Navigate to="/" />;
+      }
     }
   }
 

@@ -22,5 +22,10 @@ export { default as FreightForwarderList } from './FreightForwarderList';
 export { default as QuotationPage } from './QuotationPage';
 export { default as TariffsPage } from './TariffsPage';
 
+// Quote Pages
+export { default as QuoteDashboard } from './QuoteDashboard';
+export { default as NewQuote } from './NewQuote';
+export { default as QuoteDetails } from './QuoteDetails';
+
 // Integration Pages
 export { default as Apollo } from './Apollo';

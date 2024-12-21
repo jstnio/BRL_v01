@@ -16,11 +16,23 @@ import {
   ShipmentList,
   ShipmentDetails,
   MasterData,
-  ShippingLineList,
-  FreightForwarderList,
   QuotationPage,
-  TariffsPage
+  TariffsPage,
+  QuoteDetails,
+  NewQuote,
+  QuoteDashboard
 } from './pages';
+import {
+  AirlineList,
+  AirportList,
+  CustomerList,
+  CustomsBrokerList,
+  FreightForwarderList,
+  PortList,
+  ShippingLineList,
+  TerminalList,
+  TruckerList
+} from './pages/master-data';
 import Apollo from './pages/Apollo';
 
 export default function App() {
@@ -111,19 +123,20 @@ export default function App() {
             <Route
               path="master-data"
               element={
-                <ProtectedRoute role="admin">
+                <ProtectedRoute role="manager">
                   <MasterData />
                 </ProtectedRoute>
               }
             >
-              <Route
-                path="shipping-lines"
-                element={<ShippingLineList />}
-              />
-              <Route
-                path="freight-forwarders"
-                element={<FreightForwarderList />}
-              />
+              <Route path="airlines" element={<AirlineList />} />
+              <Route path="airports" element={<AirportList />} />
+              <Route path="customers" element={<CustomerList />} />
+              <Route path="customs-brokers" element={<CustomsBrokerList />} />
+              <Route path="freight-forwarders" element={<FreightForwarderList />} />
+              <Route path="ports" element={<PortList />} />
+              <Route path="shipping-lines" element={<ShippingLineList />} />
+              <Route path="terminals" element={<TerminalList />} />
+              <Route path="truckers" element={<TruckerList />} />
             </Route>
 
             {/* Quotation and Tariffs Routes */}
@@ -132,6 +145,30 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <QuotationPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="quotes" 
+              element={
+                <ProtectedRoute>
+                  <QuoteDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="quotes/new" 
+              element={
+                <ProtectedRoute>
+                  <NewQuote />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="quotes/:id" 
+              element={
+                <ProtectedRoute>
+                  <QuoteDetails />
                 </ProtectedRoute>
               } 
             />

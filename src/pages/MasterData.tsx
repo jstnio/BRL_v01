@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { 
   Plane, 
   Ship, 
@@ -8,7 +8,8 @@ import {
   Users, 
   Briefcase,
   Factory,
-  UserCheck
+  UserCheck,
+  ArrowLeft
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
@@ -71,11 +72,32 @@ const masterDataSections = [
 
 export default function MasterData() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
 
   if (!user || user.role !== 'manager') {
     navigate('/');
     return null;
+  }
+
+  // Check if we're on a sub-route
+  const isSubRoute = location.pathname !== '/master-data';
+
+  if (isSubRoute) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/master-data')}
+            className="flex items-center text-blue-600 hover:text-blue-800 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Data Management
+          </button>
+        </div>
+        <Outlet />
+      </div>
+    );
   }
 
   return (
